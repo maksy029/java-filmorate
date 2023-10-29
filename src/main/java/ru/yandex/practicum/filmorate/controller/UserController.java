@@ -37,11 +37,10 @@ public class UserController {
                 user.setName(user.getLogin());
             }
             user.setId(id++);
-            log.info("Добавлен новый пользователь: {}", user);
+            log.debug("Добавлен новый пользователь: {}", user);
             users.put(user.getId(), user);
         } else {
-            log.info("Ошибка валидации при добавление нового пользователя: {}", user);
-            throw new ValidationException("Ошибка валидации при добавление нового пользователя");
+            notValid(user);
         }
 
         return user;
@@ -54,11 +53,14 @@ public class UserController {
             if (user.getName() == null) {
                 user.setName(user.getLogin());
             }
-            log.info("Обновлены данные пользователя: {}", user);
+            log.debug("Обновлены данные пользователя: {}", user);
             users.put(user.getId(), user);
         } else {
-            log.info("Ошибка валидации при обновление пользователя: {}", user);
-            throw new ValidationException("Ошибка валидации при добавление нового пользователя");
+            if (!users.containsKey(user.getId())) {
+                log.debug("Ошибка при обновлении пользователя, некорректный id= {}", user.getId());
+                throw new ValidationException("Ошибка при обновлении пользователя, некорректный id= " + user.getId());
+            }
+            notValid(user);
         }
 
         return user;
@@ -70,5 +72,32 @@ public class UserController {
                 && !user.getLogin().isEmpty()
                 && !user.getLogin().contains(" ")
                 && !user.getBirthday().isAfter(LocalDate.now());
+    }
+
+    private void notValid(User user) {
+        if (user.getEmail().isEmpty()) {
+            log.debug("Ошибка валидации данных пользователя, пустой email= {}", user.getEmail());
+            throw new ValidationException("Ошибка валидации данных пользователя, пустой email= " + user.getEmail());
+        }
+        if (!user.getEmail().contains("@")) {
+            log.debug("Ошибка валидации данных пользователя,в поле email нет '@' = {}", user.getEmail());
+            throw new ValidationException("Ошибка валидации данных пользователя,в поле email нет '@' = "
+                    + user.getEmail());
+        }
+        if (user.getLogin().isEmpty()) {
+            log.debug("Ошибка валидации данных пользователя, пустое поле login= {}", user.getLogin());
+            throw new ValidationException("Ошибка валидации данных пользователя, пустое поле login= "
+                    + user.getLogin());
+        }
+        if (user.getLogin().contains(" ")) {
+            log.debug("Ошибка валидации данных пользователя, пробелы в поле login= {}", user.getLogin());
+            throw new ValidationException("Ошибка валидации данных пользователя, пробелы в поле login= "
+                    + user.getLogin());
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.debug("Ошибка валидации данных пользователя, будущая дата рождения= {}", user.getBirthday());
+            throw new ValidationException("Ошибка валидации данных пользователя, будущая дата рождения= "
+                    + user.getBirthday());
+        }
     }
 }

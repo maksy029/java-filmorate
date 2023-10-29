@@ -34,11 +34,10 @@ public class FilmController {
 
         if (validator(film)) {
             film.setId(id++);
-            log.info("Добавлен новый фильм: {}", film);
+            log.debug("Добавлен новый фильм: {}", film);
             films.put(film.getId(), film);
         } else {
-            log.info("Ошибка валидации при добавление нового фильма: {}", film);
-            throw new ValidationException("Ошибка валидации при добавление нового фильма");
+            notValid(film);
         }
 
         return film;
@@ -48,11 +47,14 @@ public class FilmController {
     public Film update(@RequestBody Film film) {
 
         if (validator(film) && films.containsKey(film.getId())) {
-            log.info("Обновлен фильм: {}", film);
+            log.debug("Обновлен фильм: {}", film);
             films.put(film.getId(), film);
         } else {
-            log.info("Ошибка валидации при обновлении фильма: {}", film);
-            throw new ValidationException("Ошибка валидации при обновление нового фильма");
+           if (!films.containsKey(film.getId())) {
+               log.debug("Ошибка при обновлении фильма, некорректый id= {}", film.getId());
+               throw new ValidationException("Ошибка при обновлении фильма, некорректый id= "+ film.getId());
+           }
+           notValid(film);
         }
 
         return film;
@@ -63,5 +65,29 @@ public class FilmController {
                 && film.getDescription().length() <= 200
                 && film.getReleaseDate().isAfter(LocalDate.of(1895, 12, 28))
                 && film.getDuration() > 0;
+    }
+
+    private void notValid(Film film) {
+        if (film.getName().isBlank()) {
+            log.debug("Ошибка при валидации фильма, не заполнено поле name= {}", film.getName());
+            throw new ValidationException("Ошибка при валидации фильма, не заполнено поле name= " + film.getName());
+        }
+        if (film.getDescription().length() > 200) {
+            log.debug("Ошибка при валидации фильма, длина поля description >200, а именно= {}"
+                    , film.getDescription().length());
+            throw new ValidationException("Ошибка при валидации фильма, длина поля description >200, а именно= "
+                    + film.getDescription().length());
+        }
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.debug("Ошибка при валидации фильма, дата релиза раньше 28.12.1895, а именно= {}"
+                    , film.getReleaseDate());
+            throw new ValidationException("Ошибка при валидации фильма, дата релиза раньше 28.12.1895, а именно= "
+                    + film.getReleaseDate());
+        }
+        if (film.getDuration() < 0) {
+            log.debug("Ошибка при валидации фильма, отрицательная продолжительность= {}", film.getDuration());
+            throw new ValidationException("Ошибка при валидации фильма, отрицательная продолжительность= "
+                    + film.getDuration());
+        }
     }
 }

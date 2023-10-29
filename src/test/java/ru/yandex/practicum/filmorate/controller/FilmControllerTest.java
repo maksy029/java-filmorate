@@ -8,7 +8,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FilmControllerTest {
     FilmController filmController;
@@ -39,7 +40,8 @@ class FilmControllerTest {
         film.setName("");
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.create(film));
-        assertEquals("Ошибка валидации при добавление нового фильма", exception.getMessage());
+        assertEquals("Ошибка при валидации фильма, не заполнено поле name= " + film.getName()
+                , exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового фильма с неверным параметром - длина описания >200")
@@ -50,7 +52,8 @@ class FilmControllerTest {
         film.setDescription(desc.toString());
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.create(film));
-        assertEquals("Ошибка валидации при добавление нового фильма", exception.getMessage());
+        assertEquals("Ошибка при валидации фильма, длина поля description >200, а именно= "
+                + film.getDescription().length(), exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового фильма с неверным параметром - дата релиза < 1895.12.28")
@@ -59,7 +62,8 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1895, 12, 27));
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.create(film));
-        assertEquals("Ошибка валидации при добавление нового фильма", exception.getMessage());
+        assertEquals("Ошибка при валидации фильма, дата релиза раньше 28.12.1895, а именно= "
+                + film.getReleaseDate(), exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового фильма с неверным параметром - продолжительность <0")
@@ -68,6 +72,7 @@ class FilmControllerTest {
         film.setDuration(-5);
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.create(film));
-        assertEquals("Ошибка валидации при добавление нового фильма", exception.getMessage());
+        assertEquals("Ошибка при валидации фильма, отрицательная продолжительность= "
+                + film.getDuration(), exception.getMessage());
     }
 }

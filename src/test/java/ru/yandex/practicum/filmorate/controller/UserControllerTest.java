@@ -40,7 +40,8 @@ class UserControllerTest {
         user.setEmail("");
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.create(user));
-        assertEquals("Ошибка валидации при добавление нового пользователя", exception.getMessage());
+        assertEquals("Ошибка валидации данных пользователя, пустой email= " + user.getEmail()
+                , exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового пользователя с неверным параметром - почта без @")
@@ -49,7 +50,8 @@ class UserControllerTest {
         user.setEmail("mya.ru");
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.create(user));
-        assertEquals("Ошибка валидации при добавление нового пользователя", exception.getMessage());
+        assertEquals("Ошибка валидации данных пользователя,в поле email нет '@' = "
+                + user.getEmail(), exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового пользователя с неверным параметром - пустой логин")
@@ -58,7 +60,8 @@ class UserControllerTest {
         user.setLogin("");
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.create(user));
-        assertEquals("Ошибка валидации при добавление нового пользователя", exception.getMessage());
+        assertEquals("Ошибка валидации данных пользователя, пустое поле login= "
+                + user.getLogin(), exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового пользователя с неверным параметром - логин с пробелом")
@@ -67,7 +70,8 @@ class UserControllerTest {
         user.setLogin("lo gin");
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.create(user));
-        assertEquals("Ошибка валидации при добавление нового пользователя", exception.getMessage());
+        assertEquals("Ошибка валидации данных пользователя, пробелы в поле login= "
+                + user.getLogin(), exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового пользователя с пустым именем")
@@ -86,6 +90,7 @@ class UserControllerTest {
         user.setBirthday(LocalDate.of(2024, 1, 1));
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.create(user));
-        assertEquals("Ошибка валидации при добавление нового пользователя", exception.getMessage());
+        assertEquals("Ошибка валидации данных пользователя, будущая дата рождения= "
+                + user.getBirthday(), exception.getMessage());
     }
 }
