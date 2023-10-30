@@ -50,11 +50,11 @@ public class FilmController {
             log.debug("Обновлен фильм: {}", film);
             films.put(film.getId(), film);
         } else {
-           if (!films.containsKey(film.getId())) {
-               log.debug("Ошибка при обновлении фильма, некорректый id= {}", film.getId());
-               throw new ValidationException("Ошибка при обновлении фильма, некорректый id= "+ film.getId());
-           }
-           notValid(film);
+            if (!films.containsKey(film.getId())) {
+                log.debug("Ошибка при обновлении фильма, некорректый id= {}", film.getId());
+                throw new ValidationException("Ошибка при обновлении фильма, некорректый id= " + film.getId());
+            }
+            notValid(film);
         }
 
         return film;
@@ -73,14 +73,14 @@ public class FilmController {
             throw new ValidationException("Ошибка при валидации фильма, не заполнено поле name= " + film.getName());
         }
         if (film.getDescription().length() > 200) {
-            log.debug("Ошибка при валидации фильма, длина поля description >200, а именно= {}"
-                    , film.getDescription().length());
+            log.debug("Ошибка при валидации фильма, длина поля description >200, а именно= {}",
+                    film.getDescription().length());
             throw new ValidationException("Ошибка при валидации фильма, длина поля description >200, а именно= "
                     + film.getDescription().length());
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.debug("Ошибка при валидации фильма, дата релиза раньше 28.12.1895, а именно= {}"
-                    , film.getReleaseDate());
+            log.debug("Ошибка при валидации фильма, дата релиза раньше 28.12.1895, а именно= {}",
+                    film.getReleaseDate());
             throw new ValidationException("Ошибка при валидации фильма, дата релиза раньше 28.12.1895, а именно= "
                     + film.getReleaseDate());
         }
