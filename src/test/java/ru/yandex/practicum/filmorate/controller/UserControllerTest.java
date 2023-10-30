@@ -40,8 +40,8 @@ class UserControllerTest {
         user.setEmail("");
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.create(user));
-        assertEquals("Ошибка валидации данных пользователя, пустой email= " + user.getEmail()
-                , exception.getMessage());
+        assertEquals("Ошибка валидации данных пользователя, пустой email= " + user.getEmail(),
+                exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового пользователя с неверным параметром - почта без @")
