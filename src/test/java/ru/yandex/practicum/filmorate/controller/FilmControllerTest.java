@@ -40,8 +40,8 @@ class FilmControllerTest {
         film.setName("");
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.create(film));
-        assertEquals("Ошибка при валидации фильма, не заполнено поле name= " + film.getName()
-                , exception.getMessage());
+        assertEquals("Ошибка при валидации фильма, не заполнено поле name= " + film.getName(),
+                exception.getMessage());
     }
 
     @DisplayName("Тест на добавление нового фильма с неверным параметром - длина описания >200")
