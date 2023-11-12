@@ -47,7 +47,7 @@ class FilmControllerTest {
     @Test
     void shouldCreatedNewFilmWhenTrueParam() {
         filmController.create(film);
-            assertEquals(1, filmController.findAll().size());
+        assertEquals(1, filmController.findAll().size());
     }
 
     @DisplayName("Тест на добавление нового фильма с неверным параметром - пустое название")

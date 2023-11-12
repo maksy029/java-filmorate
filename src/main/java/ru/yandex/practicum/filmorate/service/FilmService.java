@@ -40,12 +40,10 @@ public class FilmService {
     public Film addLike(Integer filmId, Integer userId) {
         Film film = filmById(filmId);
         Collection<User> users = userService.findAll();
-
         if (!users.contains(userService.userById(userId))) {
             log.warn("Не найден пользователь с ID=" + userId);
             throw new UserNotFoundException("Не найден пользователь с ID=" + userId);
         }
-
         film.getLikes().add(userId);
         update(film);
         log.debug("Добавлен лайк к фильму с name=" + film.getName());
@@ -55,12 +53,10 @@ public class FilmService {
     public Film deleteLike(Integer filmId, Integer userId) {
         Film film = filmById(filmId);
         Collection<User> users = userService.findAll();
-
         if (!users.contains(userService.userById(userId))) {
             log.warn("Не найден пользователь с ID=" + userId);
             throw new UserNotFoundException("Не найден пользователь с ID=" + userId);
         }
-
         film.getLikes().remove(userId);
         update(film);
         log.debug("Удален лайк у фильма с  name=" + film.getName());
