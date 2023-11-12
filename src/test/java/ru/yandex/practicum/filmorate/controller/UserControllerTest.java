@@ -5,6 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 
@@ -13,10 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserControllerTest {
     UserController userController;
+    UserService userService;
+    UserStorage userStorage;
 
     @BeforeEach
     public void init() {
-        userController = new UserController();
+        userStorage = new InMemoryUserStorage();
+        userService = new UserService(userStorage);
+        userController = new UserController(userService);
     }
 
     User user = User.builder()
@@ -31,7 +38,7 @@ class UserControllerTest {
     void shouldCreatedNewUserWhenTrueParam() {
         userController.create(user);
 
-        assertEquals(1, userController.getUsers().size());
+        assertEquals(1, userController.findAll().size());
     }
 
     @DisplayName("Тест на добавление нового пользователя с неверным параметром - пустая почта")
@@ -79,7 +86,7 @@ class UserControllerTest {
     void shouldCreatedNewUserWhenNameNull() {
         user.setName(null);
         userController.create(user);
-        User newUser = userController.getUsers().get(1);
+        User newUser = userController.userById(1);
 
         assertEquals("login", newUser.getName());
     }
