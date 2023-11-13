@@ -5,18 +5,34 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+
 class FilmControllerTest {
     FilmController filmController;
+    FilmService filmService;
+    FilmStorage filmStorage;
+    UserService userService;
+    UserStorage userStorage;
+
 
     @BeforeEach
     public void init() {
-        filmController = new FilmController();
+        filmStorage = new InMemoryFilmStorage();
+        userStorage = new InMemoryUserStorage();
+        userService = new UserService(userStorage);
+        filmService = new FilmService(filmStorage, userService);
+        filmController = new FilmController(filmService);
     }
 
     Film film = Film.builder()
@@ -31,7 +47,7 @@ class FilmControllerTest {
     @Test
     void shouldCreatedNewFilmWhenTrueParam() {
         filmController.create(film);
-        assertEquals(1, filmController.getFilms().size());
+        assertEquals(1, filmController.findAll().size());
     }
 
     @DisplayName("Тест на добавление нового фильма с неверным параметром - пустое название")

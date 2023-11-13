@@ -7,9 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FilmorateApplication {
 
     /*
-     ТЗ9, третья итерация
+     ТЗ10.1
      Что сделали?:
-     - исправили Checkstyle;
+     - добавили пропущенные log;
+     - попраили модификаторы доступа.
      */
 
     public static void main(String[] args) {
