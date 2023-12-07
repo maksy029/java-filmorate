@@ -31,6 +31,7 @@ public class FilmLikesDbStorage implements FilmLikesStorage {
         String sql = "DELETE FROM likes WHERE film_id = ? AND user_id = ?;";
         jdbcTemplate.update(sql, filmId, userId);
     }
+
     @Override
     public List<Film> topFilms(Integer count) {
         String sql = "SELECT count(user_id) AS quantity, f.*, r.rating_name " +
