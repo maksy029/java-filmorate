@@ -83,8 +83,8 @@ public class FilmDbStorage implements FilmStorage {
                 "rating_id = ? " +
                 "WHERE film_id = ?;";
 
-        jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration()
-                , film.getMpa().getId(), film.getId());
+        jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                film.getMpa().getId(), film.getId());
 
         filmGenresDbStorage.updateGenres(film);
         log.debug("В БД обновлен фильм: " + film);

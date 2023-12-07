@@ -77,8 +77,8 @@ public class UserDbStorage implements UserStorage {
                 "birthday = ? " +
                 "WHERE user_id = ?;";
 
-        jdbcTemplate.update(sql, user.getName(), user.getLogin(), user.getEmail()
-                , user.getBirthday(), user.getId());
+        jdbcTemplate.update(sql, user.getName(), user.getLogin(), user.getEmail(),
+                user.getBirthday(), user.getId());
         log.debug("В БД обновлены данные пользователя с ID=" + user.getId());
         return userById(user.getId());
     }

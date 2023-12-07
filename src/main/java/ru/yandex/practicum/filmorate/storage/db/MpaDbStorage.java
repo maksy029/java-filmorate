@@ -33,8 +33,7 @@ public class MpaDbStorage implements MpaStorage {
     public Mpa mpaById(Integer mpaId) {
         try {
             String sql = "SELECT * FROM ratings WHERE rating_id = ?;";
-            Mpa mpa = jdbcTemplate.queryForObject(sql, mpaRowMapper(), mpaId);
-            return mpa;
+            return jdbcTemplate.queryForObject(sql, mpaRowMapper(), mpaId);
         } catch (RuntimeException e) {
             log.warn("Не найден mpa с ID=" + mpaId);
             throw new EntityNotFoundException("Не найден mpa с ID=" + mpaId);
