@@ -2,31 +2,37 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmLikesStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final FilmLikesStorage filmLikesStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage
+            , UserService userService, FilmLikesStorage filmLikesStorage) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+        this.filmLikesStorage = filmLikesStorage;
     }
 
     public Collection<Film> findAll() {
         return filmStorage.findAll();
+    }
+
+    public Film filmById(Integer filmId) {
+        log.debug("Запрос на получение фильма с id=" + filmId);
+        return filmStorage.filmById(filmId);
     }
 
     public Film create(Film film) {
@@ -37,42 +43,20 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
-        Film film = filmById(filmId);
-        Collection<User> users = userService.findAll();
-        if (!users.contains(userService.userById(userId))) {
-            log.warn("Не найден пользователь с ID=" + userId);
-            throw new UserNotFoundException("Не найден пользователь с ID=" + userId);
-        }
-        film.getLikes().add(userId);
-        update(film);
-        log.debug("Добавлен лайк к фильму с name=" + film.getName());
-        return film;
+    public void addLike(Integer filmId, Integer userId) {
+        filmLikesStorage.addLikeByFilmId(filmId, userId);
+        log.debug("Добавлен лайк к фильму с ID=" + filmId);
     }
 
-    public Film deleteLike(Integer filmId, Integer userId) {
-        Film film = filmById(filmId);
-        Collection<User> users = userService.findAll();
-        if (!users.contains(userService.userById(userId))) {
-            log.warn("Не найден пользователь с ID=" + userId);
-            throw new UserNotFoundException("Не найден пользователь с ID=" + userId);
-        }
-        film.getLikes().remove(userId);
-        update(film);
-        log.debug("Удален лайк у фильма с  name=" + film.getName());
-        return film;
+    public void deleteLike(Integer filmId, Integer userId) {
+        filmById(filmId);
+        userService.userById(userId);
+        filmLikesStorage.deleteLikeByFilmId(filmId, userId);
+        log.debug("Удален лайк у фильма с  ID=" + filmId);
     }
 
     public List<Film> topFilms(Integer count) {
         log.debug("Запрос на получение списка из топ фильмов в количестве count=" + count);
-        return findAll().stream()
-                .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
-    }
-
-    public Film filmById(Integer filmId) {
-        log.debug("Запрос на получение фильма с id=" + filmId);
-        return filmStorage.filmById(filmId);
+        return filmLikesStorage.topFilms(count);
     }
 }

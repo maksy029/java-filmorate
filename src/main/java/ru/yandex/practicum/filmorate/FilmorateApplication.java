@@ -7,14 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FilmorateApplication {
 
     /*
-     ТЗ10.1
-     Что сделали?:
-     - добавили пропущенные log;
-     - попраили модификаторы доступа.
+     ТЗ11
+     Реализовали подключение проекта к БД на базе Н2
      */
 
     public static void main(String[] args) {
         SpringApplication.run(FilmorateApplication.class, args);
     }
-
 }
