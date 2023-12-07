@@ -42,9 +42,9 @@ public class UserService {
 
     public void addFriend(Integer userId, Integer friendId) {
         if (userById(userId) == null || userById(friendId) == null) {
-            throw new UserNotFoundException("Не найдены пользователи с userId="+ userId+" или friendId="+friendId);
+            throw new UserNotFoundException("Не найдены пользователи с userId=" + userId + " или friendId=" + friendId);
         }
-            friendsStorage.addFriend(userId, friendId);
+        friendsStorage.addFriend(userId, friendId);
         log.debug("Пользователю с id=" + userId + " добавлен друг с id=" + friendId);
     }
 
@@ -59,6 +59,6 @@ public class UserService {
     }
 
     public List<User> commonFriends(Integer userId, Integer otherId) {
-        return friendsStorage.commonFriends(userId,otherId);
+        return friendsStorage.commonFriends(userId, otherId);
     }
 }
