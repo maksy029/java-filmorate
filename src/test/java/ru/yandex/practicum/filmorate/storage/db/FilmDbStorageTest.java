@@ -29,8 +29,8 @@ class FilmDbStorageTest {
         FilmGenresDbStorage filmGenresDbStorage = new FilmGenresDbStorage(jdbcTemplate, genreDbStorage);
         filmDbStorage = new FilmDbStorage(jdbcTemplate, filmGenresDbStorage);
 
-        film = new Film(0, "Film1", "descFilm1"
-                , LocalDate.of(2023, 1, 1), 100, new Mpa(1, "G"));
+        film = new Film(0, "Film1", "descFilm1",
+                LocalDate.of(2023, 1, 1), 100, new Mpa(1, "G"));
     }
 
     @Test

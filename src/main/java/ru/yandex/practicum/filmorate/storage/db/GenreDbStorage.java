@@ -32,7 +32,7 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Genre genreById(Integer genreId) {
         try {
-            String sql ="SELECT * FROM genres WHERE genre_id = ?;";
+            String sql = "SELECT * FROM genres WHERE genre_id = ?;";
             return jdbcTemplate.queryForObject(sql, genreRowMapper(), genreId);
         } catch (RuntimeException e) {
             log.warn("Не найден жанр с ID=" + genreId);

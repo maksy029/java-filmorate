@@ -26,8 +26,8 @@ class UserDbStorageTest {
     void set() {
         userDbStorage = new UserDbStorage(jdbcTemplate);
 
-        user = new User(0, "user@email.ru", "vanya123", "Ivan Petrov"
-                , LocalDate.of(1990, 1, 1));
+        user = new User(0, "user@email.ru", "vanya123", "Ivan Petrov",
+                LocalDate.of(1990, 1, 1));
     }
 
     @Test
