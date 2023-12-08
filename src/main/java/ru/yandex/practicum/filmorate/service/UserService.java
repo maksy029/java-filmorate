@@ -2,28 +2,34 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendsStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-
 
 @Service
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendsStorage friendsStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendsStorage friendsStorage) {
         this.userStorage = userStorage;
+        this.friendsStorage = friendsStorage;
     }
 
     public Collection<User> findAll() {
         return userStorage.findAll();
+    }
+
+    public User userById(Integer userId) {
+        return userStorage.userById(userId);
     }
 
     public User create(User user) {
@@ -34,56 +40,25 @@ public class UserService {
         return userStorage.update(user);
     }
 
-    public User addFriend(Integer userId, Integer friendId) {
-        User user = userById(userId);
-        User friend = userById(friendId);
-        user.getFriends().add(friendId);
-        update(user);
-        friend.getFriends().add(userId);
-        update(friend);
-        log.debug("Пользователю с id=" + userId + " добавлен друг с id=" + friendId);
-        return user;
-    }
-
-    public User deleteFriend(Integer userId, Integer friendId) {
-        User user = userById(userId);
-        User friend = userById(friendId);
-        user.getFriends().remove(friendId);
-        update(user);
-        friend.getFriends().remove(userId);
-        update(friend);
-        log.debug("У пользователя с id=" + userId + " удален друг с id=" + friendId);
-        return user;
-    }
-
-    public List<User> userFriends(Integer userId) {
-        Set<Integer> friendsIds = userById(userId).getFriends();
-        Collection<User> users = findAll();
-        List<User> userFriends = new ArrayList<>();
-        for (Integer friendsId : friendsIds) {
-            if (users.contains(userById(friendsId))) {
-                userFriends.add(userById(friendsId));
-            }
+    public void addFriend(Integer userId, Integer friendId) {
+        if (userById(userId) == null || userById(friendId) == null) {
+            throw new UserNotFoundException("Не найдены пользователи с userId=" + userId + " или friendId=" + friendId);
         }
-        log.debug("Список друзей пользовтеля с id=" + userId + ": " + userFriends);
-        return userFriends;
+        friendsStorage.addFriend(userId, friendId);
+        log.debug("Пользователю с id=" + userId + " добавлен друг с id=" + friendId);
+    }
+
+    public void deleteFriend(Integer userId, Integer friendId) {
+        friendsStorage.deleteFriend(userId, friendId);
+        log.debug("У пользователя с id=" + userId + " удален друг с id=" + friendId);
+    }
+
+    public Collection<User> userFriends(Integer userId) {
+        log.debug("Запрошен список друзей пользовтеля с id=" + userId);
+        return friendsStorage.getFriendsByUserId(userId);
     }
 
     public List<User> commonFriends(Integer userId, Integer otherId) {
-        Set<Integer> userIds = userById(userId).getFriends();
-        Set<Integer> otherIds = userById(otherId).getFriends();
-        List<User> commonFriends = new ArrayList<>();
-        for (Integer id : otherIds) {
-            if (userIds.contains(id)) {
-                commonFriends.add(userById(id));
-            }
-        }
-        log.debug("Список общих друзей пользователя с id=" + userId + " и пользователя с id=" + otherId);
-        return commonFriends;
-    }
-
-    public User userById(Integer userId) {
-        log.debug("Запрос на получение пользователя с id=" + userId);
-        return userStorage.userById(userId);
+        return friendsStorage.commonFriends(userId, otherId);
     }
 }
